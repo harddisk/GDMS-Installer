@@ -2,7 +2,6 @@ Folder PATH listing for volume Data
 Volume serial number is 921F-3BDA
 D:.
 |   filelist.txt
-|   StartDeploy - Copy.cmd
 |   StartDeploy.cmd
 |   TeamViewer_Setup.exe
 |   
