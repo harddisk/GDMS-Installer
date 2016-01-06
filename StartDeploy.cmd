@@ -4,6 +4,7 @@ REM /* GDMS Deployment batch script version 1.6
 REM /* Copyright (c) 2013 by Cw Tham (cw.tham@hyundai.com.my)
 REM /*
 setlocal enableextensions enabledelayedexpansion
+goto :menu
 
 REM /* preparing variables - run once
 :prep_var
@@ -21,29 +22,23 @@ set wclive=hdlive.prowcapc
 set wctrain=hdtrain.prowcapc
 set vpnuser=hd_preferences.xml
 set vpnglob=hd_preferences_global.xml
-goto :menu
-
-:halt
-IF "%1" EQU "" goto eof
-ping -n %1 127.0.0.1 >nul
-goto :eof
+exit /b 0
 
 REM /* subroutine: display home folder s
 :checkHome
 REM /* make sure home folder is valid, otherwise variables would cause problem
 echo # Home folder    : "%~dp0"
 pushd "%~dp0" >nul 2>&1
-IF %ERRORLEVEL%==1 (
+IF "%ERRORLEVEL%" EQU "1" (
 	echo     ========================================================================
 	echo     ^|    Unable to return to home folder. Please ensure folder does not    ^|
 	echo     ^| does not contain symbols. Only alphanumeric characters are accepted. ^|
 	echo     ^|                                                                      ^|
-	echo     ^|                        Press [Enter] to close.                       ^|
+	echo     ^|                       Press [Enter] to close.                        ^|
 	echo     ========================================================================
 	pause >nul
-	goto end
 )
-goto :eof
+exit /b %ERRORLEVEL%
 
 REM /* subroutine: display Windows version
 :checkVersion
@@ -69,7 +64,7 @@ REM /* clear previous line
 <nul set /p "=%BS%!ASCII_13!                                                                        "
 <nul set /p "=%BS%!ASCII_13!# Windows version: "
 ver | find /i "version"
-goto :eof
+exit /b 0
 
 REM /* subroutine:
 :checkArchitecture
@@ -85,16 +80,16 @@ IF Defined ProgramFiles(x86) (
 REM /* clear previous line
 <nul set /p "=%BS%!ASCII_13!                                                                        "
 echo !ASCII_13!# Processor arch.: %arch%
-goto :eof
+exit /b 0
 
 :checkPrivilege
 <nul set /p "=%BS%# Checking Administrator Privileges . . ."
 set IsAdmin=0
 REM /* Type 1: Windows 2000, XP, 2003, Win8 privilege checks
-IF %atype%==1 (
+IF "%atype%" EQU "1" (
 	REM /* Windows 2000, XP, 2003 command prompt scripting
 	net session >nul 2>&1
-	IF %ERRORLEVEL% EQU 0 (
+	IF "%ERRORLEVEL%" EQU "0" (
 		set IsAdmin=1
 	) ELSE (
 		echo.
@@ -104,38 +99,38 @@ IF %atype%==1 (
 		echo     ^|           1^) Try 'runas' command or login as Administrator.          ^|
 		echo     ^|           2^) or right-click -^> Run as administrator.                 ^|
 		echo     ^|                                                                      ^|
-		echo     ^|                        Press [Enter] to close.                       ^|
+		echo     ^|                       Press [Enter] to close.                        ^|
 		echo     ========================================================================
 		echo.
 		pause >nul
-		goto end
+		exit /b 1
 	)
 )
 REM /* Type 2: Windows Vista, Win7 privilege checks
-IF %atype%==2 (
+IF "%atype%" EQU "2" (
 	REM /* Windows Vista, 7 command prompt scripting
 	whoami /groups | findstr /b /c:"Mandatory Label\High Mandatory Level" | findstr /c:"Enabled group" >nul: && set IsAdmin=1
-	IF !IsAdmin!==0 (
+	IF "!IsAdmin!" EQU "0" (
 		echo.
 		echo     ========================================================================
 		echo     ^|             Requires Administrator privileges to install.            ^|
 		echo     ^|                                                                      ^|
 		echo     ^|           You may try right-click -^> Run as administrator.           ^|
 		echo     ^|                                                                      ^|
-		echo     ^|                        Press [Enter] to close.                       ^|
+		echo     ^|                       Press [Enter] to close.                        ^|
 		echo     ========================================================================
 		pause >nul
-		goto end
+		exit /b 1
 	)
 )
 REM /* clear previous line
 <nul set /p "=%BS%!ASCII_13!                                                                        "
 echo !ASCII_13!# Admin privilege: OK
-goto :eof
+exit /b 0
 
 :prep_var_2
-REM /* 2nd stage of varibales preparation
-IF %cmdv%==1 (
+REM /* 2nd stage of variables preparation
+IF "%cmdv%" EQU "1" (
 	REM /* Windows 2000, XP, 2003
 	set startup=%ALLUSERSPROFILE%\Start Menu\Programs\Startup
 	set desktop=%ALLUSERSPROFILE%\Desktop
@@ -144,7 +139,7 @@ IF %cmdv%==1 (
 	set appdataall=%ALLUSERSPROFILE%\Application Data
 	set startmenu=%ALLUSERSPROFILE%\Start Menu\Programs
 )
-IF %cmdv%==2 (
+IF "%cmdv%" EQU "2" (
 	REM /* Windows Vista, 7, 8, 8.1, 10
 	set startup=%ALLUSERSPROFILE%\Microsoft\Windows\Start Menu\Programs\Startup
 	set desktop=%PUBLIC%\Desktop
@@ -155,20 +150,20 @@ IF %cmdv%==2 (
 )
 REM /* All GDMS related applications are 32-bit, hence
 REM /* define to x86 Program Files folder 
-IF %arch%==x86 (
+IF "%arch%" EQU "x86" (
 	set progfiles=%ProgramFiles%
 	set regkey=HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 	set wc9iss=%~dp010_Prerequisites\WC9_x86.iss
 	set wc10iss=%~dp010_Prerequisites\WC10_x86.iss
 )
-IF %arch%==x64 (
-	set progfiles=!ProgramFiles(x86^)!
+IF "%arch%" EQU "x64" (
+	set progfiles=!ProgramFiles^(x86^)!
 	set regkey=HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Run
 	set wc9iss=%~dp010_Prerequisites\WC9_x64.iss
 	set wc10iss=%~dp010_Prerequisites\WC10_x64.iss
 )
 IF NOT EXIST "%gdms%" (md "%gdms%")
-goto :eof
+exit /b 0
 
 :list_variables
 REM /* unremark these for variables debugging
@@ -190,11 +185,12 @@ REM goto :eof
 
 :menu
 title Performing Preliminary Checks . . .
-call :checkHome
-call :checkVersion
-call :checkArchitecture
-call :checkPrivilege
-call :prep_var_2
+call :prep_var || goto :end
+call :checkHome || goto :end
+call :checkVersion || goto :end
+call :checkArchitecture || goto :end
+call :checkPrivilege || goto :end
+call :prep_var_2 || goto :end
 REM /* reset menu flag to avoid executing last selection
 REM /* when pressing [Enter] without input
 set menu=
@@ -230,7 +226,7 @@ echo.
 echo         [1-8] - install specified item and the rest of item(s).
 echo         [a-h] - install ONLY single item.
 echo           [s] - switch between HD Live/Train or HT Live/Train
-echo.%
+echo.
 set /p menu="# Please enter your choice: "
 IF /i "%menu%" EQU "1" (set SINGLE_INSTALL=0&& goto 01_VPN)
 IF /i "%menu%" EQU "a" (set SINGLE_INSTALL=1&& goto 01_VPN)
@@ -274,20 +270,30 @@ IF /i "%menu%" EQU "s" (
 IF /i "%menu%" EQU "x" (goto end)
 IF /i "%menu%" EQU "z" (
 	REM /* hidden menu, show all missing files
-	echo.
-	call :printLine
-	echo    Missing files:
-	IF "%i1stat%" NEQ "OK" (echo %i1mesg%)
-	IF "%i2stat%" NEQ "OK" (echo %i2mesg%)
-	IF "%i3stat%" NEQ "OK" (echo %i3mesg%)
-	IF "%i4stat%" NEQ "OK" (echo %i4mesg%)
-	IF "%i5stat%" NEQ "OK" (echo %i5mesg%)
-	IF "%i6stat%" NEQ "OK" (echo %i6mesg%)
-	IF "%i7stat%" NEQ "OK" (echo %i7mesg%)
-	IF "%i8stat%" NEQ "OK" (echo %i8mesg%)
-	call :printLine
-	echo.
-	call :halt 5
+	IF "%i1stat%%i2stat%%i3stat%%i4stat%%i5stat%%i6stat%%i7stat%%i8stat%" EQU "OKOKOKOKOKOKOKOK" (
+		echo.
+		echo               ====================================================
+		echo               ^|     Prerequisites files verification passed^^!     ^|
+		echo               ====================================================
+		echo.
+		call :halt 3
+	) ELSE (
+		echo.
+		call :printLine
+		echo    Missing files:
+		IF "%i1stat%" NEQ "OK" (echo %i1mesg%)
+		IF "%i2stat%" NEQ "OK" (echo %i2mesg%)
+		IF "%i3stat%" NEQ "OK" (echo %i3mesg%)
+		IF "%i4stat%" NEQ "OK" (echo %i4mesg%)
+		IF "%i5stat%" NEQ "OK" (echo %i5mesg%)
+		IF "%i6stat%" NEQ "OK" (echo %i6mesg%)
+		IF "%i7stat%" NEQ "OK" (echo %i7mesg%)
+		IF "%i8stat%" NEQ "OK" (echo %i8mesg%)
+		call :printLine
+		echo.
+		echo Press [Enter] to continue . . .
+		pause >nul
+	)
 	goto menu
 )
 REM /* when no valid selection is made
@@ -366,7 +372,7 @@ IF "%i1stat%" EQU "OK" (
 		echo     ^|         x VPN client already installed. Skipping installation.       ^|
 		echo     ^|         - To proceed with installation, please uninstall first.      ^|
 	)
-	if "%errflag%" EQU "1" (
+	if "!errflag!" EQU "1" (
 		echo     ^|                                                                      ^|
 		echo     ^|       VPN client installation aborted.                               ^|
 		echo     ========================================================================
@@ -765,7 +771,6 @@ IF "%i7stat%" EQU "OK" (
 		echo     ^|       WebClient Live installation aborted.                           ^|
 		echo     ^|======================================================================^|
 	)
-	echo     ^|                                                                      ^|
 	REM /* detect IF application already installed -- find program folder
 	REM /*   \WebClientApps\SIME\HD/HT Train GDMS
 	echo     ^|       ^> Scanning %webc% Train installation . . .                         ^|
@@ -865,7 +870,24 @@ IF "%i8stat%" EQU "OK" (
 IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
 REM /* Print Service - end
 echo.
-goto :end
+goto :menu
+
+REM /* globally available subroutines for cmd batch
+:halt
+IF "%1" EQU "" goto eof
+ping -n %1 127.0.0.1 >nul
+goto :eof
+
+:printLine
+set "ln= =============================================================================="
+echo %ln%
+goto :eof
+
+:printBar
+<nul set /p "=%BS%!ASCII_13!^|                                                                      ^|"
+<nul set /p "=%BS%!ASCII_13!%1"
+echo ^|
+goto :eof
 
 REM /* subroutine: checks files completion
 :checkModule
@@ -1032,17 +1054,6 @@ IF NOT EXIST "%~3" (
 		set "%2=!%2!!NL!        [%~3]"
 	)
 )
-exit /b
-
-:printLine
-set "ln= =============================================================================="
-echo %ln%
-goto :eof
-
-:printBar
-<nul set /p "=%BS%!ASCII_13!^|                                                                      ^|"
-<nul set /p "=%BS%!ASCII_13!%1"
-echo ^|
 goto :eof
 
 :end
