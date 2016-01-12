@@ -356,6 +356,8 @@ IF "%i1stat%" EQU "OK" (
 			copy /v /y %vpnglob% "%AppDataAll%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences_global.xml" >nul 2>&1
 			echo     ^|         + Configuring Cisco AnyConnect client ^(user^) . . .           ^|
 			copy /v /y %vpnuser% "%AppDataUser%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences.xml" >nul 2>&1
+			echo     ^|         + Fixing DNS issue on Cisco AnyConnect Network Interface     ^|
+			reg add HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters\Interfaces\{7F71A4BD-4905-4335-9EE0-81F1943A135D} /v RegistrationEnabled /t REG_DWORD /d 0 /f >nul
 			echo     ^|         + Creating shortcut file . . .                               ^|
 			copy /v /y "%StartMenu%\Cisco\Cisco AnyConnect Secure Mobility Client\Cisco AnyConnect Secure Mobility Client.lnk" "%gdms%" >nul 2>&1
 			echo     ^|                                                                      ^|
