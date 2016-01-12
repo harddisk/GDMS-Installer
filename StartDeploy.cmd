@@ -350,6 +350,7 @@ IF "%i1stat%" EQU "OK" (
 		echo     ^|       ^> Installing "anyconnect-win-3.1.04059-web-deploy-k9.exe"      ^|
 		call "anyconnect-win-3.1.04059-web-deploy-k9.exe" /qn
 		IF "%ERRORLEVEL%" EQU "0" (
+			push ..\10_Prerequisites
 			echo     ^|         + Completed.                                                 ^|
 			echo     ^|         + Configuring Cisco AnyConnect client ^(global^) . . .         ^|
 			copy /v /y %vpnglob% "%AppDataAll%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences_global.xml" >nul 2>&1
@@ -360,6 +361,7 @@ IF "%i1stat%" EQU "OK" (
 			echo     ^|                                                                      ^|
 			echo     ^|       VPN client installed and configured.                           ^|
 			echo     ========================================================================
+			popd
 		) ELSE (
 			REM /* unknown error, installation aborted by installer
 			SET errflag=1
