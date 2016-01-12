@@ -350,16 +350,32 @@ IF "%i1stat%" EQU "OK" (
 		echo     ^|       ^> Installing "anyconnect-win-3.1.04059-web-deploy-k9.exe"      ^|
 		call "anyconnect-win-3.1.04059-web-deploy-k9.exe" /qn
 		IF "%ERRORLEVEL%" EQU "0" (
-			push ..\10_Prerequisites
+			pushd ..\10_Prerequisites
 			echo     ^|         + Completed.                                                 ^|
 			echo     ^|         + Configuring Cisco AnyConnect client ^(global^) . . .         ^|
 			copy /v /y %vpnglob% "%AppDataAll%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences_global.xml" >nul 2>&1
 			echo     ^|         + Configuring Cisco AnyConnect client ^(user^) . . .           ^|
 			copy /v /y %vpnuser% "%AppDataUser%\Cisco\Cisco AnyConnect Secure Mobility Client\preferences.xml" >nul 2>&1
-			echo     ^|         + Fixing DNS issue on Cisco AnyConnect Network Interface     ^|
-			reg add HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters\Interfaces\{7F71A4BD-4905-4335-9EE0-81F1943A135D} /v RegistrationEnabled /t REG_DWORD /d 0 /f >nul
 			echo     ^|         + Creating shortcut file . . .                               ^|
 			copy /v /y "%StartMenu%\Cisco\Cisco AnyConnect Secure Mobility Client\Cisco AnyConnect Secure Mobility Client.lnk" "%gdms%" >nul 2>&1
+            echo     ^|                                                                      ^|
+            echo     ^|       ^> Fixing DNS issue on Cisco AnyConnect Network Interface . . . ^|
+			FOR /f "tokens=*" %%A IN ('reg query HKLM\SYSTEM\CurrentControlSet\Control\Class') DO (
+            	FOR /f "tokens=*" %%B IN ('reg query %%A') DO (
+                    reg query %%B /f "Cisco AnyConnect Secure Mobility Client" >nul 2>&1
+                    IF "!errorlevel!" EQU "0" (
+                        FOR /f "tokens=1-3" %%C IN ('reg query %%B /v NetCfgInstanceId ^| findstr /i NetCfgInstanceId') DO (
+                            reg query HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\Tcpip\Parameters\Interfaces\%%E /v RegistrationEnabled >nul 2>&1
+                            IF "!errorlevel!" EQU "0" (
+                                reg add HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services\Tcpip\Parameters\Interfaces\%%E /v RegistrationEnabled /t REG_DWORD /d 0 /f >nul
+                                echo     ^|         + Done.                                                      ^|
+                            ) else (
+                                echo     ^|         x Failed.                                                    ^|
+                            )
+                        )
+                    )
+            	)
+            )
 			echo     ^|                                                                      ^|
 			echo     ^|       VPN client installed and configured.                           ^|
 			echo     ========================================================================
@@ -392,9 +408,13 @@ IF "%i1stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* VPN - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 3
+    goto menu
+)
+REM /* VPN - end
 
 :02_FTP
 title [%osv%] [%arch%] Installing FTP server . . .
@@ -489,9 +509,14 @@ IF "%i2stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* FTP server - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* FTP server - end
+
 
 :03_PUT
 title [%osv%] [%arch%] Installing PuTTY . . .
@@ -547,9 +572,13 @@ IF "%i3stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* PuTTY - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* PuTTY - end
 
 :04_CRV
 title [%osv%] [%arch%] Installing Crystal Report . . .
@@ -620,9 +649,13 @@ IF "%i4stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* Crystal - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* Crystal - end
 
 :05_WC9
 title [%osv%] [%arch%] Installing Web Client v9 . . .
@@ -667,9 +700,13 @@ IF "%i5stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* WebClient9 - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* WebClient9 - end
 
 :06_WC10
 title [%osv%] [%arch%] Installing Web Client v10 . . .
@@ -727,9 +764,13 @@ IF "%i6stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* WebClient10 - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* WebClient10 - end
 
 :07_WCA
 title [%osv%] [%arch%] Configuring %webc% WebClient module . . .
@@ -822,8 +863,12 @@ IF "%i7stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
 REM /* HD/HT Live/Train - end
 
 :08_PRS
@@ -871,9 +916,13 @@ IF "%i8stat%" EQU "OK" (
 	call :halt 2
 	set SINGLE_INSTALL=1
 )
-IF "%SINGLE_INSTALL%" EQU "1" (set SINGLE_INSTALL=&& goto menu)
-REM /* Print Service - end
 echo.
+IF "%SINGLE_INSTALL%" EQU "1" (
+    set SINGLE_INSTALL=
+    call :halt 2
+    goto menu
+)
+REM /* Print Service - end
 goto :menu
 
 REM /* globally available subroutines for cmd batch
