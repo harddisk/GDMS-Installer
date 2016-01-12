@@ -797,7 +797,7 @@ IF "%i7stat%" EQU "OK" (
 		echo     ^|         + Moving shortcut file . . .                                 ^|
 		move /y "%desktop%\%webc% Train GDMS.lnk" "%gdms%" >nul 2>&1
 		echo     ^|                                                                      ^|
-		echo     ^|       WebClient Live/Train applications installed.                   ^|
+		echo     ^|       WebClient Train applications installed.                        ^|
 		echo     ========================================================================
 	) ELSE (
 		REM /* skip installation
