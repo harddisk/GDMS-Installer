@@ -3,6 +3,8 @@ REM /*
 REM /* GDMS Deployment batch script version 1.6
 REM /* Copyright (c) 2013 by Cw Tham (cw.tham@hyundai.com.my)
 REM /*
+REM /* 2016-02-03: update file just for Git update to test AutoCRLF
+REM /*
 setlocal enableextensions enabledelayedexpansion
 goto :menu
 
