@@ -596,7 +596,6 @@ IF "%i4stat%" EQU "OK" (
 	IF NOT EXIST "%ProgFiles%\SAP BusinessObjects\Crystal Reports for .NET Framework 4.0\Common\Crystal Reports 2011\" (
 		echo     ^|         + No existing installation found.                            ^|
 		IF "%cmdv%" EQU "1" (
-			pushd ..\11_Big_Files
 			echo     ^|                                                                      ^|
 			echo     ^|       ^> Checking DotNET Framework v3.5 installation . . .            ^|
 			IF EXIST "%windir%\Microsoft.NET\Framework\v3.5" (
@@ -606,20 +605,26 @@ IF "%i4stat%" EQU "OK" (
 				echo     ^|         - Press [Enter] to proceed with installation.                ^|
 				echo     ^|           ^(this will take a moment.^)                                 ^|
 				pause >nul
-				IF EXIST "dotnetfx35.exe" (
-					echo     ^|         ^> Installing "dotnetfx35.exe"                                ^|
-					call "dotnetfx35.exe"
-					IF "%ERRORLEVEL%" EQU "0" (
-						echo     ^|           + Completed.                                               ^|
+				IF EXIST ..\11_Big_Files (
+					pushd ..\11_Big_Files
+					IF EXIST "dotnetfx35.exe" (
+						echo     ^|         ^> Installing "dotnetfx35.exe"                                ^|
+						call "dotnetfx35.exe"
+						IF "%ERRORLEVEL%" EQU "0" (
+							echo     ^|           + Completed.                                               ^|
+						) ELSE (
+							echo     ^|           x Completed with error.                                    ^|
+						)
 					) ELSE (
-						echo     ^|           x Completed with error.                                    ^|
+						REM /* skip when file not found
+						echo     ^|         x Skipped installation, "dotnetfx35.exe" not found.          ^|
 					)
+					popd
 				) ELSE (
-					REM /* skip when file not found
-					echo     ^|         x Skipped installation, "dotnetfx35.exe" not found.          ^|
+					echo     ^|         x Skipped installation, 11_Big_Files folder not found.       ^|
 				)
 			)
-			popd
+
 		)
 		echo     ^|                                                                      ^|
 		echo     ^|       ^> Installing "CRRuntime_32bit_13_0_6.msi"                      ^|
