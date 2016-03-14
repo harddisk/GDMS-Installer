@@ -441,6 +441,7 @@ IF "%i2stat%" EQU "OK" (
 			echo     ^|         x Completed with error.                                      ^|
 		)
 		taskkill /f /im "FileZilla Server Interface.exe" >nul 2>&1
+		pushd ..\10_Prerequisites
 		echo     ^|         + Updating FileZilla configuration . . .                     ^|
 		copy /v /y "FileZilla Server.xml" "%ProgFiles%\FileZilla Server\" >nul 2>&1
 		REM /* determine whether FileZilla Server.exe could be found, before doing /reload-config
@@ -450,6 +451,7 @@ IF "%i2stat%" EQU "OK" (
 		) ELSE (
 			echo     ^|           x Failed.                                                  ^|
 		)
+		popd
 		echo     ^|         + Removing autorun registry entry . . .                      ^|
 		reg delete "%regkey%" /v "FileZilla Server Interface" /f >nul 2>&1
 		echo     ^|         + Creating 'ftproot' and 'tmp' folders . . .                 ^|
