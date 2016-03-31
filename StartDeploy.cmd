@@ -488,8 +488,8 @@ IF "%i2stat%" EQU "OK" (
 			icacls "%gdms%\[tmp] @ C.lnk" /grant Users:F >nul 2>&1
 			echo     ^|         + Adding Firewall Rule for FileZilla . . .                   ^|
 			REM /* Delete rule first to avoid duplicated entries
-			netsh advfirewall firewall delete rule name="FileZilla FTP Server ^(%arch%^)" > nul 2>&1
-			netsh advfirewall firewall add rule name="FileZilla FTP Server ^(%arch%^)" dir=in action=allow program="%ProgFiles%\FileZilla Server\FileZilla Server.exe" enable=yes >nul 2>&1
+			netsh advfirewall firewall delete rule name="FileZilla FTP Server %arch%" > nul 2>&1
+			netsh advfirewall firewall add rule name="FileZilla FTP Server %arch%" dir=in action=allow program="%ProgFiles%\FileZilla Server\FileZilla Server.exe" enable=yes >nul 2>&1
 		)
 		echo     ^|                                                                      ^|
 		echo     ^|       FTP server installed and configured.                           ^|
