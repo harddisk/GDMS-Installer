@@ -19,11 +19,13 @@ set NLM=^
 
 set NL=^^^%NLM%%NLM%^%NLM%%NLM%
 REM /* set WebClient default to HD Live
-set webc=HD
-set wclive=hdlive.prowcapc
-set wctrain=hdtrain.prowcapc
-set vpnuser=hd_preferences.xml
-set vpnglob=hd_preferences_global.xml
+IF "%webc%" EQU "" (
+    set webc=HD
+    set wclive=hdlive.prowcapc
+    set wctrain=hdtrain.prowcapc
+    set vpnuser=hd_preferences.xml
+    set vpnglob=hd_preferences_global.xml
+)
 exit /b 0
 
 REM /* subroutine: display home folder s
@@ -263,7 +265,7 @@ IF /i "%menu%" EQU "s" (
 	)
 	echo.
 	echo                    ==========================================
-	echo                    ^|           Switching to [!webc!]            ^|
+	echo                    ^|            Switched to [!webc!]            ^|
 	echo                    ==========================================
 	echo.
 	call :halt 2
