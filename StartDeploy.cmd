@@ -253,15 +253,15 @@ IF /i "%menu%" EQU "s" (
 		set webc=HT
 		set vpnuser=ht_preferences.xml
 		set vpnglob=ht_preferences_global.xml
-		set wclive=hdlive.prowcapc
-		set wctrain=hdtrain.prowcapc
+		set wclive=htlive.prowcapc
+		set wctrain=httrain.prowcapc
 	)
 	IF /i "%webc%" EQU "HT" (
 		set webc=HD
 		set vpnuser=hd_preferences.xml
 		set vpnglob=hd_preferences_global.xml
-		set wclive=htlive.prowcapc
-		set wctrain=httrain.prowcapc
+		set wclive=hdlive.prowcapc
+		set wctrain=hdtrain.prowcapc
 	)
 	echo.
 	echo                    ==========================================
