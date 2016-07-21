@@ -6,6 +6,7 @@ REM /*
 REM /* 2016-02-03: update file just for Git update to test AutoCRLF
 REM /*
 setlocal enableextensions enabledelayedexpansion
+set debug=0
 goto :menu
 
 REM /* preparing variables - run once
@@ -171,21 +172,28 @@ exit /b 0
 
 :list_variables
 REM /* unremark these for variables debugging
-REM echo StartUp          : %StartUp%
-REM echo Desktop          : %Desktop%
-REM echo GDMS             : %GDMS%
-REM echo AppDataUser      : %AppDataUser%
-REM echo AppDataAll       : %AppDataAll%
-REM echo StartMenu        : %StartMenu%
-REM echo Program Files    : %ProgFiles%
-REM echo VPN user config  : %VPNUser%
-REM echo VPN Global config: %VPNGlob%
-REM echo FTP autorun key  : %RegKey%
-REM echo WC9 Script       : %WC9ISS%
-REM echo WC10 Script      : %WC10ISS%
-REM echo WC Live Prowcapc : %WCLive%
-REM echo WC Train Prowcapc: %WCTrain%
-REM goto :eof
+echo  ====================
+echo  ^|    Debug Info    ^|
+echo  ====================
+echo    StartUp          : %StartUp%
+echo    Desktop          : %Desktop%
+echo    GDMS             : %GDMS%
+echo    AppDataUser      : %AppDataUser%
+echo    AppDataAll       : %AppDataAll%
+echo    StartMenu        : %StartMenu%
+echo    Program Files    : %ProgFiles%
+echo    VPN user config  : %VPNUser%
+echo    VPN Global config: %VPNGlob%
+echo    FTP autorun key  : %RegKey%
+echo    WC9 Script       : %WC9ISS%
+echo    WC10 Script      : %WC10ISS%
+echo    WC Live Prowcapc : %WCLive%
+echo    WC Train Prowcapc: %WCTrain%
+echo  ====================
+echo  ^|     End Info     ^|
+echo  ====================
+echo.
+goto :eof
 
 :menu
 title Performing Preliminary Checks . . .
@@ -195,6 +203,8 @@ call :checkVersion || goto :end
 call :checkArchitecture || goto :end
 call :checkPrivilege || goto :end
 call :prep_var_2 || goto :end
+REM /* display debugging info
+IF "%debug%" EQU "1" call :list_variables
 REM /* reset menu flag to avoid executing last selection
 REM /* when pressing [Enter] without input
 set menu=
